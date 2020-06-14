@@ -1,26 +1,19 @@
-os: linux
-language: ruby
-dist: xenial
-sudo: 
+node_js:
+  -11.6.0
+  cache: npm
 
-services:
-    - docker
+  before_install:
+  install:
+    -npm ci
+   
+  script:
+    - npm test
+    - npm run build
 
-before_install:
-   - docker build -t buddaprem93/docker-react -f Dockerfile.dev .
+  deploy:
+    provider:pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
 
-script:
-   - docker run buddaprem93/docker-react npm run test -- --coverage
-
-   deploy:
- provider: elasticbeanstalk
- region: "us-west-1"
- app: "docker"
- env: "Docker-env"
- bucket_name: "elasticbeanstalk-us-west-1-659886872572"
- bucket_path: "docker"
- on:
-  branch: master
-  access_key_id = AWS_ACCESS_KEY 
-  secret_access_key:
-     secure = AWS_SECRET_KEY
+  on:
+    branch: master
